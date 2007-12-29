@@ -1,0 +1,24 @@
+[Global]
+CurrentProject=bz2fb.vpj
+[ProjectDates]
+bz2fb.vpj=20071115220056234
+[TreeExpansion2]
++ bz2fb.vpj
+scroll:0
+[State]
+SCREEN: 1920 1200 1939 13 1572 1100 0 0 N 0 0 0 0 1258 681 0
+CWD: ..\bz2fb
+BUFFER: BN="G:\projects\personal\rcapdissector\bin\dumpcap.rb"
+BI: MA=1 74 1  TABS=1 5  WWS=0 IWT=0 ST=0 IN=2 BW=0 US=32000 RO=0 SE=1 SN=0 BIN=0 MN=Ruby	HM=0 MF=0 TL=0 MLL=0 ASE=0 LNL=6 LCF=0 CAPS=0 E=0 ESBU2=-1
+VIEW: LN=.4571 CL=27 LE=0 CX=27 CY=28 WI=5 BI=22 HT=0 HN=0 HF=0 HC=4
+FILEHIST: 9
+G:\projects\personal\bz2jb\etc\config.rb.in
+G:\projects\personal\bz2jb\bin\gen_config.rb
+G:\projects\personal\bz2jb\bin\bz.xml
+G:\projects\personal\rcapdissector\bin\dumpcap.rb
+G:\projects\personal\bz2jb\lib\bz2fb\bugzilla_reader.rb
+G:\projects\personal\bz2jb\lib\bz2fb\fogbugz_writer.rb
+G:\projects\personal\bz2jb\lib\bz2fb.rb
+G:\projects\personal\bz2jb\bin\bz2fb.rb
+G:\projects\personal\bz2jb\lib\bz2fb\bz2fb_converter.rb
+TBCLASS: 0 0
