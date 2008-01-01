@@ -12,7 +12,8 @@ def parse_opts()
         :bz_file => nil,
         :fb_url => nil,
         :fb_username => nil,
-        :fb_password => nil
+        :fb_password => nil,
+        :config_file => File.dirname(__FILE__) + '/../etc/config.rb'
     }
     
     opt_parser = OptionParser.new
@@ -41,6 +42,10 @@ def parse_opts()
     opt_parser.on("-v", "--verbose",  "Turns on verbose logging") {|val| 
         $log.level  = Logger::DEBUG
         $log.debug "Setting log level to DEBUG"
+    }
+
+    opt_parser.on("-c", "--config-file FILE",  "Overrides the default config file location, #{opts[:config_file]}") {|val| 
+        opts[:config_file] = val
     }
     
     remaining_args = opt_parser.parse(*ARGV)
@@ -82,6 +87,14 @@ def parse_opts()
     opts
 end
 
+def read_config(config_file)
+    begin
+        require config_file
+    rescue
+        $log.error "Error reading config file '#{config_file}': #{$!}"
+    end
+end
+
 def login_to_fogbugz(url, user, password) 
     BZ2FB::FogBugzWriter.new(url, user, password)
 end
@@ -90,16 +103,34 @@ def main()
     $log.debug "Starting"
 
     opts = parse_opts()
+    read_config(opts[:config_file])
 
-    fb = login_to_fogbugz(opts[:fb_url], opts[:fb_username], opts[:fb_password])
-    #rdr = BZ2FB::BugzillaReader.new(File.open(opts[:bz_file]))
+    fb_writer = login_to_fogbugz(opts[:fb_url], opts[:fb_username], opts[:fb_password])
+    bz_reader = BZ2FB::BugzillaReader.new(File.open(opts[:bz_file]))
 
-    bug = fb.find_migrated_bug(12345)
-    if bug != nil
-        puts "Migrated bug: "
-        p bug
-        puts 
+    converter = BZ2FB::BugzillaToFogBugzConverter.new($config, bz_reader, fb_writer)
+
+    #Before the conversion check for valid field mappings
+    #missing_fields = converter.pre_conversion_sanity_check
+    missing_fields = []
+    if missing_fields.length > 0
+        missing_fields.sort!
+        $log.error "One or more FogBugz field values are missing:"
+        missing_fields.each do |field|
+            $log.error "\t#{field}"
+        end
+        exit(-1)
     end
+
+    #Do the actual conversion
+    converter.convert_bugs
+
+    #bug = fb.find_migrated_bug(12345)
+    #if bug != nil
+    #    puts "Migrated bug: "
+    #    p bug
+    #    puts 
+    #end
 
     $log.info "Done"
 end

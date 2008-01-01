@@ -107,8 +107,12 @@ module BZ2FB
                             :ts => parse_bz_ts(get_element_text(elem, "bug_when")),
                             :note => get_element_text(elem, "thetext")
                         })
-                    if get_element_text(elem, "thetext") =~ /\*\*\* This bug has been marked as a duplicate of bug (\d+) \*\*\*/)
-                        bug[:dupe_of] = $&.to_i
+                    if get_element_text(elem, "thetext") =~ /\*\*\* This bug has been marked as a duplicate of bug (\d+) \*\*\*/
+                        bug[:dupe_of] = $1.to_i
+                        if bug[:dupe_of] == 0
+                            raise RuntimeError, "Bug #{bug[:id]} is a duplicate of another bug, but the bug number extracted from the note was zero.  The note used to derive the duplicate bug number was [[[#{get_element_text(elem, 'thetext')}]]] and the string matched by the regex was [[[#{$1}]]]"
+                        end
+                        $log.debug "Bug #{bug[:id]} is a duplicate of bug #{bug[:dupe_of]}"
                     end
 
                     when 'attachment'
@@ -127,6 +131,13 @@ module BZ2FB
                     else
                         raise "Unrecognized <bug> element #{elem.name}"
                 end
+            end
+
+            # Combine the status and resolution into a combination value for easier 
+            # translation to Fogbugz
+            bug[:status_and_resolution] = bug[:status]
+            if bug[:status] == 'RESOLVED'
+                bug[:status_and_resolution] += "::" + bug[:resolution]
             end
 
             bug
